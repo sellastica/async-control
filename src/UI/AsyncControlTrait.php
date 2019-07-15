@@ -22,17 +22,17 @@ trait AsyncControlTrait
 		if (!$this instanceof Control || !($presenter = $this->getPresenter(false)) || !$presenter->isAjax()) {
 			return;
 		}
+
 		ob_start(function () {
 		});
+
 		try {
 			$this->renderAsync();
 		} catch (\Throwable $e) {
 			ob_end_clean();
 			throw $e;
-		} catch (\Exception $e) {
-			ob_end_clean();
-			throw $e;
 		}
+
 		$content = ob_get_clean();
 		$presenter->getPayload()->snippets[$this->getSnippetId('async')] = $content;
 		$presenter->sendPayload();
@@ -54,6 +54,7 @@ trait AsyncControlTrait
 			if ($template instanceof Template) {
 				$template->add('link', new AsyncControlLink($linkMessage, $linkAttributes));
 			}
+
 			$template->setFile(__DIR__ . '/templates/asyncLoadLink.latte');
 			$template->render();
 		} elseif (is_callable($this->asyncRenderer)) {
